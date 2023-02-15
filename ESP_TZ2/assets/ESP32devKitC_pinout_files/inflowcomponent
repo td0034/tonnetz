@@ -1,0 +1,9 @@
+(function (w, d, s, f, js, fjs) {
+                w["IFHLiteConfig"] = {"pageId":2047675,"gbhEnabled":false,"fromGH":"true","serviceUrl":"https://www.ebay.co.uk/ifh/"};
+                f.forEach(function(file) {
+                  (js = d.createElement(s)), (fjs = d.getElementsByTagName(s)[0]);
+                  js.src = file;
+                  js.async = 1;
+                  fjs.parentNode.insertBefore(js, fjs);
+                });
+              })(window, document, "script", ["https://www.ebay.co.uk/ifh/lite-ifh8ea64728114eadfe6d4f.js"])
