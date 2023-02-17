@@ -3,6 +3,10 @@
 		{
 			"name": "Blink_WROOM_32D",
 			"path": "Blink_WROOM_32D"
+		},
+		{
+			"name": "WifiManagerLib_WROOM_32",
+			"path": "WifiManagerLib_WROOM_32"
 		}
 	],
 	"settings": {}
