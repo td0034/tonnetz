@@ -67,11 +67,15 @@ const int PIN_BUTTON = 5;
 bool wifi_connected = false;
 bool button_pressed = false;
 
+unsigned long previousMillis = 0;   // will store last time server data was grabbed
+DynamicJsonDocument doc(1024);
+
+
 #define JSON_CONFIG_FILE "/sample_config.json"
 
 // Number of seconds after reset during which a
 // subseqent reset will be considered a double reset.
-#define DRD_TIMEOUT 2
+#define DRD_TIMEOUT 1
 
 // RTC Memory Address for the DoubleResetDetector to use
 #define DRD_ADDRESS 0
@@ -90,6 +94,7 @@ int testNumber = 1500;
 bool testBool = true;
 
 const char* serverName = "http://raspberrypi2.local/post-esp-data.php";
+const char* GET_server = "http://raspberrypi2.local/get_slider_data.php";
 String apiKeyValue = "tPmAT5Ab3j7F9";
 String sensorName = "BRL_test";
 String sensorLocation = "Office";
@@ -246,12 +251,13 @@ void postDataToLocalrPi(){
   if (wifi_connected) 
   {
   
-    WiFiClient client;
+    //WiFiClient client;
     HTTPClient http;
     
     // Your Domain name with URL path or IP address with path
-    http.begin(client, serverName);
-    
+    //http.begin(client, serverName);
+    http.begin(serverName);
+
     // Specify content-type header
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     
@@ -287,6 +293,52 @@ void postDataToLocalrPi(){
     }
     // Free resources
     http.end();
+  }
+}
+
+void pullLatestData(){
+  //Serial.println("Pulling latest data from server");
+  // Block until we are able to connect to the WiFi access point
+  if (wifi_connected) 
+  {
+  HTTPClient http;
+
+    // Begin request to server URL
+    http.begin(GET_server);
+
+    // Send GET request and get response code
+    int httpResponseCode = http.GET();
+
+    // Check if request was successful
+    if (httpResponseCode>0) {
+      //Serial.print("HTTP Response code: ");
+      //Serial.println(httpResponseCode);
+
+      // Get response payload as a string
+      String payload = http.getString();
+      //Serial.println(payload);
+
+      DeserializationError error = deserializeJson(doc, payload);
+      if (error) {
+          Serial.print(F("Failed to parse JSON: "));
+          Serial.println(error.c_str());
+          return;
+      }
+
+      const char* slider1 = doc["slider1"];
+      Serial.println(slider1);
+
+    }
+    else {
+      //Serial.print("Error code: ");
+      //Serial.println(httpResponseCode);
+    }
+    // Close connection and free resources
+    http.end();
+  }
+  else 
+  {
+    Serial.println("WiFi Disconnected");
   }
 }
 
@@ -433,4 +485,11 @@ void loop()
     button_pressed = false;
   }
 
+  unsigned long currentMillis = millis();
+  
+  if (currentMillis - previousMillis >= 500)
+  {
+    pullLatestData();
+    previousMillis = currentMillis;
+  }
 }
