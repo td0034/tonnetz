@@ -1,0 +1,44 @@
+GNU nano 5.4                                                          index.html                                                                   
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Webserver</title>
+  <style>
+    html {font-family: Arial; display: inline-block; text-align: center;}
+    h2 {font-size: 2.3rem;}
+    p {font-size: 1.9rem;}
+    body {max-width: 400px; margin:0px auto; padding-bottom: 25px;}
+    .slider { -webkit-appearance: none; margin: 14px; width: 360px; height: 25px; background: #FFD65C;
+      outline: none; -webkit-transition: .2s; transition: opacity .2s;}
+    .slider::-webkit-slider-thumb {-webkit-appearance: none; appearance: none; width: 35px; height: 35px;}
+    .slider::-moz-range-thumb { width: 35px; height: 35px; background: #003249; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Web Server</h2>
+  <p>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+  </p>
+  <p>
+    <label for="targetDevice">Target Device:</label>
+    <input type="text" id="targetDevice" name="targetDevice">
+  </p>
+  <p><span id="textSliderValue">%SLIDERVALUE%</span></p>
+  <p><input type="range" oninput="updateSliderPWM(this)" id="pwmSlider" min="0" max="255" value="%SLIDERVALUE%"></p>
+  <script>
+    function updateSliderPWM(element) {
+      var sliderValue = document.getElementById("pwmSlider").value;
+      var username = document.getElementById("username").value;
+      var targetDevice = document.getElementById("targetDevice").value;
+      document.getElementById("textSliderValue").innerHTML = sliderValue;
+      console.log(sliderValue);
+      var xhr = new XMLHttpRequest();
+      var url = "/update.php?slider1="+sliderValue+"&username="+username+"&targetDevice="+targetDevice+"&On_off="+username+"&slider2="+sliderValue;
+      xhr.open("GET", url, true);
+      xhr.send();
+    }
+  </script>
+</body>
+</html>
